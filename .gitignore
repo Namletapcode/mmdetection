@@ -103,9 +103,8 @@ venv.bak/
 
 # mypy
 .mypy_cache/
-data/
-data
 .vscode
+data/images/
 .idea
 .DS_Store
 
@@ -118,6 +117,9 @@ mmdet/.mim
 work_dirs/
 
 # Pytorch
-*.pth
+
 *.py~
 *.sh~
+
+
+results
