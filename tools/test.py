@@ -90,6 +90,13 @@ def main():
     if args.show or args.show_dir:
         cfg = trigger_visualization_hook(cfg, args)
 
+    if 'test_evaluator' in cfg:
+        if isinstance(cfg.test_evaluator, dict):
+            cfg.test_evaluator['classwise'] = True
+        elif isinstance(cfg.test_evaluator, list):
+            for eval_cfg in cfg.test_evaluator:
+                eval_cfg['classwise'] = True
+
     if args.tta:
 
         if 'tta_model' not in cfg:
