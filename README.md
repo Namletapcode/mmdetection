@@ -1,4 +1,4 @@
-# Malaria Parasite Detection - Cascade R-CNN
+# Malaria Parasite Detection
 
 Dự án này sử dụng framework MMDetection để nhận diện các giai đoạn phát triển của tế bào ký sinh trùng sốt rét.
 
