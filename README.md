@@ -33,13 +33,14 @@ custom_model
 ```
 
 ## 3. Trực quan hoá
-Chạy lệnh sau để vẽ bounding box trên các ảnh trong tập test (điều chỉnh model và checkpoint phù hợp):
+Chạy lệnh sau để vẽ bounding box trên các ảnh trong tập test (điều chỉnh mô hình cần đánh giá trong tools/predict.py)
+
 ```
-python tools/test.py custom_model/custom_cascade.py custom_model/checkpoints/cascade_epoch_22.pth
+python tools/predict.py
 ```
 
 ## 4. Đánh giá mô hình
-Chạy lệnh sau để đánh giá mô hình (điều chỉnh mô hình cần đánh giá trong tools/predict.py):
+Chạy lệnh sau để đánh giá mô hình (điều chỉnh model và checkpoint phù hợp)::
 ```
-python tools/predict.py
+python tools/test.py custom_model/custom_cascade.py custom_model/checkpoints/cascade_epoch_22.pth
 ```
