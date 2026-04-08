@@ -7,7 +7,12 @@ Dự án này sử dụng framework MMDetection để nhận diện các giai đ
 Chạy lệnh sau tại thư mục gốc của dự án để cài đặt các gói phụ thuộc:
 
 ```
-pip install -r requirements.txt
+conda env create -f environment.yml
+```
+
+Rồi kích hoạt môi trường: 
+```
+conda activate mmdet
 ```
 
 ## 2. Cài đặt data
