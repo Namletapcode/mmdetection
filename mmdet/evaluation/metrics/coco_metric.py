@@ -19,6 +19,56 @@ from mmdet.structures.mask import encode_mask_results
 from ..functional import eval_recalls
 
 
+def _print_model_and_dataset():
+    import sys
+    # Default values
+    model_name = 'unknown'
+    dataset = 'original'
+    
+    config_path = None
+    checkpoint_path = None
+    for arg in sys.argv:
+        if arg.endswith('.py') and 'tools/' not in arg:
+            config_path = arg
+        elif arg.endswith(('.pth', '.pt', '.pth.tar')):
+            checkpoint_path = arg
+            
+    # Fallback to positional arguments if not found by extension
+    positional_args = [arg for arg in sys.argv[1:] if not arg.startswith('-')]
+    if not config_path and len(positional_args) >= 1:
+        config_path = positional_args[0]
+    if not checkpoint_path and len(positional_args) >= 2:
+        checkpoint_path = positional_args[1]
+
+    if config_path:
+        basename = osp.splitext(osp.basename(config_path))[0]
+        if basename.startswith('custom_'):
+            name = basename[7:]
+        else:
+            name = basename
+        
+        mapping = {
+            'cascade': 'cascade rcnn',
+            'cascade_mask': 'cascade mask rcnn',
+            'faster': 'faster rcnn',
+            'libra': 'libra rcnn',
+            'mask': 'mask rcnn'
+        }
+        model_name = mapping.get(name, name.replace('_', ' '))
+
+    if checkpoint_path:
+        checkpoint_path_lower = checkpoint_path.lower().replace('\\', '/')
+        for ds in ['original', 'v2', 'v3', 'v4']:
+            if f'/{ds}/' in f'/{checkpoint_path_lower}/':
+                dataset = ds
+                break
+
+    print(f'\n========================================\n')
+    print(f'Model used: {model_name}')
+    print(f'dataset: {dataset}\n')
+    print(f'========================================', end='')
+
+
 @METRICS.register_module()
 class CocoMetric(BaseMetric):
     """COCO evaluation metric.
@@ -502,6 +552,7 @@ class CocoMetric(BaseMetric):
                 coco_eval.params.useCats = 0
                 coco_eval.evaluate()
                 coco_eval.accumulate()
+                _print_model_and_dataset()
                 coco_eval.summarize()
                 if metric_items is None:
                     metric_items = [
@@ -516,6 +567,7 @@ class CocoMetric(BaseMetric):
             else:
                 coco_eval.evaluate()
                 coco_eval.accumulate()
+                _print_model_and_dataset()
                 coco_eval.summarize()
                 if self.classwise:  # Compute per-category AP
                     # Compute per-category AP

@@ -6,13 +6,17 @@ model = dict(
         anchor_generator=dict(
             type='AnchorGenerator', scales=[2], ratios=[0.5, 1.0, 2.0], strides=[4, 8, 16, 32, 64])
     ),
-    roi_head=dict(bbox_head=dict(num_classes=16))
+    roi_head=dict(bbox_head=dict(num_classes=4))
 )
 
 dataset_type = 'CocoDataset'
-data_root = 'data/images/' 
-json_root = 'data/'
-metainfo = {'classes': ('falciparum_R', 'falciparum_S', 'falciparum_T', 'falciparum_G', 'vivax_R', 'vivax_S', 'vivax_T', 'vivax_G', 'ovale_R', 'ovale_S', 'ovale_T', 'ovale_G', 'malariae_R', 'malariae_S', 'malariae_T', 'malariae_G')}
+data_root = 'data/v2/images/test/' 
+json_root = 'data/v2/labels/'
+# data_root = 'data/original/images/' 
+# json_root = 'data/original/4-labels/bounding_box/'
+# data_root = 'data/original/images/' 
+# json_root = 'data/original/16-labels/'
+metainfo = {'classes': ('falciparum','vivax', 'ovale', 'malariae')}
 
 train_pipeline = [
     dict(type='LoadImageFromFile', backend_args=None),
@@ -31,9 +35,9 @@ test_pipeline = [
 
 train_dataloader = dict(batch_size=2, dataset=dict(type=dataset_type, metainfo=metainfo, data_root='', ann_file=json_root + 'train_coco.json', data_prefix=dict(img=data_root), pipeline=train_pipeline))
 val_dataloader = dict(dataset=dict(type=dataset_type, metainfo=metainfo, data_root='', ann_file=json_root + 'val_coco.json', data_prefix=dict(img=data_root), pipeline=test_pipeline))
-test_dataloader = val_dataloader
+test_dataloader = dict(dataset=dict(type=dataset_type, metainfo=metainfo, data_root='', ann_file=json_root + 'test_coco.json', data_prefix=dict(img=data_root), pipeline=test_pipeline))
 val_evaluator = dict(type='CocoMetric', ann_file=json_root + 'val_coco.json', metric='bbox', format_only=False)
-test_evaluator = val_evaluator
+test_evaluator = dict(type='CocoMetric', ann_file=json_root + 'test_coco.json', metric='bbox', format_only=False)
 
 train_cfg = dict(type='EpochBasedTrainLoop', max_epochs=24, val_interval=1)
 
@@ -47,4 +51,17 @@ param_scheduler = [
     dict(type='LinearLR', start_factor=0.001, by_epoch=False, begin=0, end=500),
     dict(type='MultiStepLR', begin=0, end=24, by_epoch=True, milestones=[16, 22], gamma=0.1)
 ]
-default_hooks = dict(logger=dict(type='LoggerHook', interval=5), checkpoint=dict(type='CheckpointHook', interval=1, max_keep_ckpts=5, out_dir='/kaggle/working/checkpoints/libra_rcnn'))
+
+default_hooks = dict(
+    logger=dict(type='LoggerHook', interval=5),
+    checkpoint=dict(type='CheckpointHook', interval=1, max_keep_ckpts=24, save_best='auto', out_dir='/kaggle/working/checkpoints/cascade_rcnn')
+)
+
+visualizer = dict(
+    type='DetLocalVisualizer',
+    vis_backends=[
+        dict(type='LocalVisBackend'),         
+        dict(type='TensorboardVisBackend')    
+    ],
+    name='visualizer'
+)

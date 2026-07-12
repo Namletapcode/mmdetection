@@ -2,8 +2,12 @@
 import argparse
 import os
 import os.path as osp
+import sys
 import warnings
 from copy import deepcopy
+
+# Add project root to sys.path to prioritize local mmdet package
+sys.path.insert(0, osp.abspath(osp.join(osp.dirname(__file__), '..')))
 
 from mmengine import ConfigDict
 from mmengine.config import Config, DictAction

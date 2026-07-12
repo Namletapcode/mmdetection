@@ -6,9 +6,9 @@ from mmdet.apis import init_detector, inference_detector
 from mmdet.registry import VISUALIZERS
 
 config_file = 'custom_model/custom_cascade.py'
-checkpoint_file = 'custom_model/checkpoints/cascade_epoch_22.pth'
-test_json_path = 'data/test_coco.json'  
-images_dir = 'data/images'      
+checkpoint_file = 'custom_model/checkpoints/v3/cascade_epoch_15.pth'
+test_json_path = 'data/original/4-labels/bounding_box/test_coco.json'  
+images_dir = 'data/original/images'      
 output_dir = 'results'  
 
 os.makedirs(output_dir, exist_ok=True)
@@ -31,13 +31,14 @@ for img_path in tqdm(img_paths, desc="Predicting"):
 
     img = cv2.imread(img_path)
 
-    result = inference_detector(model, img) #
+    result = inference_detector(model, img) 
 
     visualizer.add_datasample(
         'result',
         img,
         data_sample=result,
         draw_gt=False,
+        draw_pred=True,
         wait_time=0,
         out_file=output_path,
         pred_score_thr=0.5
